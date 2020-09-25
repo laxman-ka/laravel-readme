@@ -19,8 +19,7 @@ use Illuminate\Support\Facades\Cache;
 use Karla\Routing\Capsule;
 use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment;
-use Webuni\CommonMark\AttributesExtension\AttributesExtension;
-use Webuni\CommonMark\TableExtension\TableExtension;
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 
 /**
  * @author sankar <sankar.suda@gmail.com>
@@ -90,22 +89,15 @@ class Repository extends Capsule
         $environment->addDocumentProcessor($headerProcessor);
 
         $environment->addExtension(new MarkExtension());
-        $environment->addExtension(new TableExtension());
-        $environment->addExtension(new AttributesExtension());
+        $environment->addExtension(new GithubFlavoredMarkdownExtension());
 
         $extensions = config('readme.extensions');
 
         if (is_array($extensions)) {
-            foreach($extensions as $extension) {
+            foreach ($extensions as $extension) {
                 $environment->addExtension($extension);
             }
         }
-
-        //$environment->addExtension(new TwitterHandleAutolinkExtension());
-        //$environment->addExtension(new SmartPunctExtension());
-        //$environment->addExtension(new LinkifyExtension());
-
-        //$environment->addInlineParser(new TaskListsParser());
 
         $converter = new CommonMarkConverter([], $environment);
         $content   = $converter->convertToHtml($content);
