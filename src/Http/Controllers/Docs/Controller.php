@@ -31,7 +31,7 @@ class Controller extends BaseController
             $version = null;
         }
 
-        $page    = $page ?: 'introduction';
+        $page    = $page ?: config('readme.docs.landing');
         $version = $version ?: 'master';
         $version = $versions[$version];
 

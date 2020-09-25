@@ -8,9 +8,9 @@ return [
         'middleware' => ['web'],
     ],
     'versions'   => [
-        'default'   => '1.0',
+        'default'   => 'v1',
         'published' => [
-            '1.0',
+            'v1',
         ],
     ],
     'variables'  => [],
