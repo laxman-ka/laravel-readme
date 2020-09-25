@@ -11,7 +11,7 @@ declare (strict_types = 1);
  * file that was distributed with this source code
  */
 
-namespace Divity\Readme\Http\Controllers\Postman;
+namespace Diviky\Readme\Http\Controllers\Postman;
 
 use App\Http\Controllers\Docs\Mark\MarkExtension;
 use App\Http\Controllers\Postman\Snippet\Generator;

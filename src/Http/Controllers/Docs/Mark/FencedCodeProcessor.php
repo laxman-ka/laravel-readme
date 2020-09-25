@@ -9,7 +9,7 @@
  * file that was distributed with this source code
  */
 
-namespace Divity\Readme\Http\Controllers\Docs\Mark;
+namespace Diviky\Readme\Http\Controllers\Docs\Mark;
 
 use League\CommonMark\Block\Element\Document;
 use League\CommonMark\Block\Element\FencedCode;

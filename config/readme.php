@@ -5,6 +5,7 @@ return [
         'route'      => '/docs',
         'path'       => '/resources/docs',
         'landing'    => 'index',
+        'menu'       => 'documentation',
         'middleware' => ['web'],
     ],
     'versions'   => [

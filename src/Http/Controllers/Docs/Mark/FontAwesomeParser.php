@@ -11,25 +11,25 @@ declare (strict_types = 1);
  * file that was distributed with this source code
  */
 
-namespace Divity\Readme\Http\Controllers\Docs\Mark;
+namespace Diviky\Readme\Http\Controllers\Docs\Mark;
 
 use League\CommonMark\InlineParserContext;
 use League\CommonMark\Inline\Element\HtmlInline;
-use League\CommonMark\Inline\Parser\AbstractInlineParser;
+use League\CommonMark\Inline\Parser\InlineParserInterface;
 
 /**
  * This is the fontawesome icon parser class.
  *
  * @author sankar <sankar.suda@gmail.com>
  */
-class FontAwesomeParser extends AbstractInlineParser
+class FontAwesomeParser implements InlineParserInterface
 {
     /**
      * Get the characters that must be matched.
      *
      * @return string[]
      */
-    public function getCharacters()
+    public function getCharacters(): array
     {
         return [':'];
     }
@@ -43,7 +43,7 @@ class FontAwesomeParser extends AbstractInlineParser
      *
      * @return bool
      */
-    public function parse(InlineParserContext $inlineContext)
+    public function parse(InlineParserContext $inlineContext): bool
     {
         $cursor   = $inlineContext->getCursor();
         $previous = $cursor->peek(-1);

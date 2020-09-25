@@ -9,43 +9,26 @@
  * file that was distributed with this source code
  */
 
-namespace Divity\Readme\Http\Controllers\Docs\Mark;
+namespace Diviky\Readme\Http\Controllers\Docs\Mark;
 
-use League\CommonMark\Extension\Extension;
+use League\CommonMark\ConfigurableEnvironmentInterface;
+use League\CommonMark\Extension\ExtensionInterface;
 
 /**
  * @author sankar <sankar.suda@gmail.com>
  */
-class MarkExtension extends Extension
+class MarkExtension implements ExtensionInterface
 {
-    private $emojis = [];
+    protected $emojis = [];
 
-    public function getBlockParsers()
+    public function register(ConfigurableEnvironmentInterface $environment)
     {
-        return [];
+        $environment
+            ->addInlineParser(new EmojiParser($this->getEmojis()))
+            ->addInlineParser(new FontAwesomeParser($this->getEmojis()));
     }
 
-    public function getInlineParsers()
-    {
-        return [
-            new EmojiParser($this->getEmojis()),
-            new FontAwesomeParser($this->getEmojis()),
-        ];
-    }
-
-    public function getInlineProcessors()
-    {
-        return [];
-    }
-
-    public function getDocumentProcessors()
-    {
-        return [
-            new FencedCodeProcessor(),
-        ];
-    }
-
-    private function getEmojis(): array
+    protected function getEmojis(): array
     {
         if (empty($this->emojis)) {
             $this->emojis = json_decode(file_get_contents(__DIR__ . '/emoji.json'), true);

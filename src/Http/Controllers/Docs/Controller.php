@@ -11,7 +11,7 @@ declare (strict_types = 1);
  * file that was distributed with this source code
  */
 
-namespace Divity\Readme\Http\Controllers\Docs;
+namespace Diviky\Readme\Http\Controllers\Docs;
 
 use App\Http\Controllers\Controller as BaseController;
 

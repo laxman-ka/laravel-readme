@@ -9,7 +9,7 @@
  * file that was distributed with this source code
  */
 
-namespace Divity\Readme\Http\Controllers\Postman;
+namespace Diviky\Readme\Http\Controllers\Postman;
 
 use App\Http\Controllers\Controller as BaseController;
 

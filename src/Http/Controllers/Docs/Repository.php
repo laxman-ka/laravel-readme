@@ -11,19 +11,20 @@ declare (strict_types = 1);
  * file that was distributed with this source code
  */
 
-namespace Divity\Readme\Http\Controllers\Docs;
+namespace Diviky\Readme\Http\Controllers\Docs;
 
-use Divity\Readme\Http\Controllers\Docs\Mark\HeaderProcessor;
-use Divity\Readme\Http\Controllers\Docs\Mark\MarkExtension;
+use Diviky\Readme\Http\Controllers\Docs\Mark\HeaderProcessor;
+use Diviky\Readme\Http\Controllers\Docs\Mark\MarkExtension;
 use Illuminate\Support\Facades\Cache;
 use Karla\Routing\Capsule;
 use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment;
+use League\CommonMark\Event\DocumentParsedEvent;
 use League\CommonMark\Extension\Attributes\AttributesExtension;
-use League\CommonMark\Extension\Autolink\AutolinkExtension;
 use League\CommonMark\Extension\Footnote\FootnoteExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
 use League\CommonMark\Extension\Mention\MentionExtension;
+use League\CommonMark\Extension\SmartPunct\SmartPunctExtension;
 
 /**
  * @author sankar <sankar.suda@gmail.com>
@@ -86,18 +87,17 @@ class Repository extends Capsule
 
     public function parse(string $content): array
     {
-        $headerProcessor = new HeaderProcessor();
-
         $environment = Environment::createCommonMarkEnvironment();
 
-        $environment->addDocumentProcessor($headerProcessor);
+        $headerProcessor = new HeaderProcessor();
+        $environment->addEventListener(DocumentParsedEvent::class, $headerProcessor, -100);
 
-        $environment->addExtension(new MarkExtension());
         $environment->addExtension(new GithubFlavoredMarkdownExtension());
         $environment->addExtension(new AttributesExtension());
         $environment->addExtension(new FootnoteExtension());
         $environment->addExtension(new MentionExtension());
-        $environment->addExtension(new AutolinkExtension());
+        $environment->addExtension(new SmartPunctExtension());
+        $environment->addExtension(new MarkExtension());
 
         $extensions = config('readme.extensions');
 
@@ -159,7 +159,9 @@ class Repository extends Capsule
 
     public function getIndexes($version): ?string
     {
-        return $this->getSimplePage('documentation', $version);
+        $documentation = config('readme.docs.menu');
+
+        return $this->getSimplePage($documentation, $version);
     }
 
     public function formatSections(array $sections): array

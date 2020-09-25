@@ -11,18 +11,18 @@ declare (strict_types = 1);
  * file that was distributed with this source code
  */
 
-namespace Divity\Readme\Http\Controllers\Docs\Mark;
+namespace Diviky\Readme\Http\Controllers\Docs\Mark;
 
 use League\CommonMark\InlineParserContext;
 use League\CommonMark\Inline\Element\Image;
-use League\CommonMark\Inline\Parser\AbstractInlineParser;
+use League\CommonMark\Inline\Parser\InlineParserInterface;
 
 /**
  * This is the emoji parser class.
  *
  * @author Graham Campbell <graham@alt-three.com>
  */
-class EmojiParser extends AbstractInlineParser
+class EmojiParser implements InlineParserInterface
 {
     /**
      * The emoji mappings.
@@ -46,7 +46,7 @@ class EmojiParser extends AbstractInlineParser
      *
      * @return string[]
      */
-    public function getCharacters()
+    public function getCharacters(): array
     {
         return [':'];
     }
@@ -60,7 +60,7 @@ class EmojiParser extends AbstractInlineParser
      *
      * @return bool
      */
-    public function parse(InlineParserContext $inlineContext)
+    public function parse(InlineParserContext $inlineContext): bool
     {
         $cursor   = $inlineContext->getCursor();
         $previous = $cursor->peek(-1);

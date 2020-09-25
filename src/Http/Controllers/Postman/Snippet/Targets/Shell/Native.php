@@ -11,7 +11,7 @@ declare (strict_types = 1);
  * file that was distributed with this source code
  */
 
-namespace Divity\Readme\Http\Controllers\Postman\Snippet\Targets\Shell;
+namespace Diviky\Readme\Http\Controllers\Postman\Snippet\Targets\Shell;
 
 use App\Http\Controllers\Postman\Snippet\Builder;
 use App\Http\Controllers\Postman\Snippet\Targets\TargetAbstract;

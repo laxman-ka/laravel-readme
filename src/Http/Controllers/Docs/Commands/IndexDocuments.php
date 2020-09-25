@@ -1,6 +1,6 @@
 <?php
 
-namespace Divity\Readme\Console\Commands;
+namespace Diviky\Readme\Console\Commands;
 
 use App\Services\Documentation\Indexer;
 use Illuminate\Console\Command;

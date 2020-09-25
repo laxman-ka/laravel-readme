@@ -11,7 +11,7 @@ declare (strict_types = 1);
  * file that was distributed with this source code
  */
 
-namespace Divity\Readme\Http\Controllers\Postman\Snippet;
+namespace Diviky\Readme\Http\Controllers\Postman\Snippet;
 
 /**
  * @author sankar <sankar.suda@gmail.com>

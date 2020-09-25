@@ -1,6 +1,6 @@
 <?php
 
-namespace Divity\Readme\Console\Commands;
+namespace Diviky\Readme\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Filesystem\Filesystem;
