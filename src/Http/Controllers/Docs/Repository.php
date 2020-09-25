@@ -19,7 +19,11 @@ use Illuminate\Support\Facades\Cache;
 use Karla\Routing\Capsule;
 use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment;
+use League\CommonMark\Extension\Attributes\AttributesExtension;
+use League\CommonMark\Extension\Autolink\AutolinkExtension;
+use League\CommonMark\Extension\Footnote\FootnoteExtension;
 use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use League\CommonMark\Extension\Mention\MentionExtension;
 
 /**
  * @author sankar <sankar.suda@gmail.com>
@@ -90,6 +94,10 @@ class Repository extends Capsule
 
         $environment->addExtension(new MarkExtension());
         $environment->addExtension(new GithubFlavoredMarkdownExtension());
+        $environment->addExtension(new AttributesExtension());
+        $environment->addExtension(new FootnoteExtension());
+        $environment->addExtension(new MentionExtension());
+        $environment->addExtension(new AutolinkExtension());
 
         $extensions = config('readme.extensions');
 
@@ -99,7 +107,9 @@ class Repository extends Capsule
             }
         }
 
-        $converter = new CommonMarkConverter([], $environment);
+        $config = config('readme.markdown');
+
+        $converter = new CommonMarkConverter($config, $environment);
         $content   = $converter->convertToHtml($content);
 
         $sections = $headerProcessor->getSections();

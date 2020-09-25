@@ -16,4 +16,6 @@ return [
     'variables'  => [],
     'cache_time' => 10,
     'extensions' => [],
+    // markdown configuration
+    'markdown'   => [],
 ];
