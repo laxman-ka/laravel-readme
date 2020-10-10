@@ -224,7 +224,7 @@ class Repository extends Capsule
 
     public function getVersions(): array
     {
-        $versions = config('readme.versions');
+        $versions = config('readme.versions.published');
 
         if (!is_array($versions)) {
             return [
@@ -232,9 +232,9 @@ class Repository extends Capsule
             ];
         }
 
-        $first = array_values($versions)[0];
+        $versions = array_combine($versions, $versions);
 
-        $versions['master'] = $first;
+        $versions['master'] = key($versions);
 
         return $versions;
     }

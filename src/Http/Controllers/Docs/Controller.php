@@ -32,7 +32,8 @@ class Controller extends BaseController
         }
 
         $page    = $page ?: config('readme.docs.landing');
-        $version = $version ?: 'master';
+        $version = $version ?: config('readme.versions.default', 'master');
+
         $version = $versions[$version];
 
         $indexes = $repo->getIndexes($version);
