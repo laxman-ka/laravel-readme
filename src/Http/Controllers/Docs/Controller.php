@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the Deployment package.
@@ -20,13 +20,18 @@ use App\Http\Controllers\Controller as BaseController;
  */
 class Controller extends BaseController
 {
+    public function loadViewsFrom(): string
+    {
+        return __DIR__;
+    }
+
     public function index($version = null, $page = null): array
     {
         $repo = new Repository();
 
         $versions = $repo->getVersions();
 
-        if ($page == null && $version && !$versions[$version]) {
+        if (null == $page && $version && !$versions[$version]) {
             $page    = $version;
             $version = null;
         }
@@ -40,7 +45,7 @@ class Controller extends BaseController
         $content = $repo->getPage($page, $version);
 
         $sections = [];
-        if (is_array($content['sections'])) {
+        if (\is_array($content['sections'])) {
             $sections = $content['sections'];
             $title    = $sections[0]['t'];
             $sections = $repo->formatSections($sections);

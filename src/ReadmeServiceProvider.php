@@ -7,22 +7,25 @@ use Illuminate\Support\ServiceProvider;
 
 class ReadmeServiceProvider extends ServiceProvider
 {
-    protected function path()
-    {
-        return __DIR__ . '/..';
-    }
-
     public function boot()
     {
         Route::group($this->routesConfig(), function () {
             $this->loadRoutesFrom($this->path() . '/routes/web.php');
         });
 
-        $this->mergeConfigFrom($this->path() . '/config/readme.php', 'readme');
-
         if ($this->app->runningInConsole()) {
             $this->console();
         }
+    }
+
+    public function register()
+    {
+        $this->mergeConfigFrom($this->path() . '/config/readme.php', 'readme');
+    }
+
+    protected function path()
+    {
+        return __DIR__ . '/..';
     }
 
     /**
@@ -44,9 +47,5 @@ class ReadmeServiceProvider extends ServiceProvider
         $this->publishes([
             $this->path() . '/config/readme.php' => config_path('readme.php'),
         ], 'config');
-    }
-
-    public function register()
-    {
     }
 }
