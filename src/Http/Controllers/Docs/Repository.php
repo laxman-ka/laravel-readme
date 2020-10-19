@@ -140,15 +140,13 @@ class Repository extends Capsule
      */
     public function replaceLinks(string $content, string $version): ?string
     {
-        $replace            = [];
+        $replace = config('readme.variables');
+        if (!is_array($replace)) {
+            $replace = [];
+        }
+
         $replace['version'] = $version;
         $replace['domain']  = request()->getSchemeAndHttpHost();
-
-        $variables = config('readme.variables');
-
-        if (\is_array($variables)) {
-            $replace = \array_merge($replace, $variables);
-        }
 
         foreach ($replace as $key => $value) {
             $content = str_replace('{{' . $key . '}}', $value, $content);

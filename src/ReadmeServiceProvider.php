@@ -46,6 +46,6 @@ class ReadmeServiceProvider extends ServiceProvider
     {
         $this->publishes([
             $this->path() . '/config/readme.php' => config_path('readme.php'),
-        ], 'readme-config');
+        ], 'config');
     }
 }
