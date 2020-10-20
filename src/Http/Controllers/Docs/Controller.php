@@ -31,7 +31,7 @@ class Controller extends BaseController
 
         $versions = $repo->getVersions();
 
-        if (null == $page && $version && !$versions[$version]) {
+        if (null == $page && $version) {
             $page    = $version;
             $version = null;
         }
@@ -39,7 +39,7 @@ class Controller extends BaseController
         $page    = $page ?: config('readme.docs.landing');
         $version = $version ?: config('readme.versions.default', 'master');
 
-        $version = $versions[$version];
+        $version = $versions[$version] ?: $version;
 
         $indexes = $repo->getIndexes($version);
         $content = $repo->getPage($page, $version);
