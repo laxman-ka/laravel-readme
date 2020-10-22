@@ -20,6 +20,23 @@ use App\Http\Controllers\Controller as BaseController;
  */
 class Controller extends BaseController
 {
+    /**
+     * The documentation repository.
+     *
+     * @var \App\Documentation
+     */
+    protected $docs;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @param \App\Documentation $docs
+     */
+    public function __construct(Repository $docs)
+    {
+        $this->docs = $docs;
+    }
+
     public function loadViewsFrom(): string
     {
         return __DIR__;
@@ -27,9 +44,7 @@ class Controller extends BaseController
 
     public function index($version = null, $page = null): array
     {
-        $repo = new Repository();
-
-        $versions = $repo->getVersions();
+        $versions = $this->docs->getVersions();
 
         if (null == $page && $version) {
             $page    = $version;
@@ -41,14 +56,14 @@ class Controller extends BaseController
 
         $version = $versions[$version] ?: $version;
 
-        $indexes = $repo->getIndexes($version);
-        $content = $repo->getPage($page, $version);
+        $indexes = $this->docs->getIndexes($version);
+        $content = $this->docs->getPage($page, $version);
 
         $sections = [];
         if (\is_array($content['sections'])) {
             $sections = $content['sections'];
             $title    = $sections[0]['t'];
-            $sections = $repo->formatSections($sections);
+            $sections = $this->docs->formatSections($sections);
         }
 
         return [

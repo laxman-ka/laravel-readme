@@ -1,6 +1,6 @@
 <?php
 
-declare (strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the Deployment package.
@@ -15,8 +15,8 @@ namespace Diviky\Readme\Http\Controllers\Docs;
 
 use Diviky\Readme\Http\Controllers\Docs\Mark\HeaderProcessor;
 use Diviky\Readme\Http\Controllers\Docs\Mark\MarkExtension;
-use Illuminate\Support\Facades\Cache;
-use Karla\Routing\Capsule;
+use Illuminate\Contracts\Cache\Repository as Cache;
+use Illuminate\Filesystem\Filesystem;
 use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment;
 use League\CommonMark\Event\DocumentParsedEvent;
@@ -29,60 +29,54 @@ use League\CommonMark\Extension\SmartPunct\SmartPunctExtension;
 /**
  * @author sankar <sankar.suda@gmail.com>
  */
-class Repository extends Capsule
+class Repository
 {
     /**
-     * Get the given documentation page.
+     * The filesystem implementation.
      *
-     * @param string $page
-     * @param string $version
+     * @var \Illuminate\Filesystem\Filesystem
+     */
+    protected $files;
+
+    /**
+     * The cache implementation.
+     *
+     * @var \Illuminate\Contracts\Cache\Repository
+     */
+    protected $cache;
+
+    /**
+     * Create a new documentation instance.
+     */
+    public function __construct(Filesystem $files, Cache $cache)
+    {
+        $this->files = $files;
+        $this->cache = $cache;
+    }
+
+    /**
+     * Get the given documentation page.
      *
      * @return string
      */
     public function getPage(string $page, string $version = '1.0'): array
     {
-        $time = config('readme.cache_time') ?: 20;
+        $content = $this->getContent($page, $version);
+        if ($content) {
+            return $this->parse($content);
+        }
 
-        return Cache::store('file')->remember('docs.' . $version . $page, $time, function () use ($version, $page) {
-            $path = resource_path('docs') . '/' . $version . '/' . $page;
-
-            if ($this->get('files')->isDirectory($path)) {
-                $path .= '/' . config('readme.docs.landing');
-            }
-
-            $path .= '.md';
-
-            if ($this->get('files')->exists($path)) {
-                $content = $this->replaceLinks($this->get('files')->get($path), $version);
-
-                return $this->parse($content);
-            }
-
-            return [];
-        });
+        return [];
     }
 
     public function getSimplePage(string $page, string $version = '1.0'): ?string
     {
-        $time = config('readme.cache_time') ?: 20;
+        $content = $this->getContent($page, $version);
+        if ($content) {
+            return $this->parseSimple($content);
+        }
 
-        return Cache::store('file')->remember('docs.' . $version . $page, $time, function () use ($version, $page) {
-            $path = resource_path('docs') . '/' . $version . '/' . $page;
-
-            if ($this->get('files')->isDirectory($path)) {
-                $path .= '/' . config('readme.docs.landing');
-            }
-
-            $path .= '.md';
-
-            if ($this->get('files')->exists($path)) {
-                $content = $this->replaceLinks($this->get('files')->get($path), $version);
-
-                return $this->parseSimple($content);
-            }
-
-            return null;
-        });
+        return null;
     }
 
     public function parse(string $content): array
@@ -101,7 +95,7 @@ class Repository extends Capsule
 
         $extensions = config('readme.extensions');
 
-        if (is_array($extensions)) {
+        if (\is_array($extensions)) {
             foreach ($extensions as $extension) {
                 $environment->addExtension($extension);
             }
@@ -133,15 +127,12 @@ class Repository extends Capsule
     /**
      * Replace the version place-holder in links.
      *
-     * @param string $version
-     * @param string $content
-     *
      * @return string
      */
     public function replaceLinks(string $content, string $version): ?string
     {
         $replace = config('readme.variables');
-        if (!is_array($replace)) {
+        if (!\is_array($replace)) {
             $replace = [];
         }
 
@@ -149,9 +140,9 @@ class Repository extends Capsule
         $replace['domain']  = request()->getSchemeAndHttpHost();
 
         foreach ($replace as $key => $value) {
-            $content = str_replace('{{' . $key . '}}', $value, $content);
-            $content = str_replace('{{ ' . $key . ' }}', $value, $content);
-            $content = str_replace('{' . $key . '}', $value, $content);
+            $content = \str_replace('{{' . $key . '}}', $value, $content);
+            $content = \str_replace('{{ ' . $key . ' }}', $value, $content);
+            $content = \str_replace('{' . $key . '}', $value, $content);
         }
 
         return $content;
@@ -182,18 +173,18 @@ class Repository extends Capsule
                 'url'  => '#' . $section['s'],
             ];
 
-            if (is_null($firstLevel) || $firstLevel == $level || $firstLevel > $level) {
+            if (\is_null($firstLevel) || $firstLevel == $level || $firstLevel > $level) {
                 ++$firstLoop;
                 $formated[$firstLoop] = $format;
                 $firstLevel           = $level;
             } elseif ($firstLevel < $level) {
-                if (is_null($secondLevel) || $secondLevel == $level || $secondLevel > $level) {
+                if (\is_null($secondLevel) || $secondLevel == $level || $secondLevel > $level) {
                     ++$secondLoop;
                     $formated[$firstLoop]['childs'][$secondLoop] = $format;
                     $secondLevel                                 = $level;
                 } elseif ($secondLevel < $level) {
                     //Thid loop
-                    if (is_null($thirdLevel) || $thirdLevel == $level || $thirdLevel > $level) {
+                    if (\is_null($thirdLevel) || $thirdLevel == $level || $thirdLevel > $level) {
                         ++$thirdLoop;
                         $formated[$firstLoop]['childs'][$secondLoop]['childs'][$thirdLoop] = $format;
                         $thirdLevel                                                        = $level;
@@ -215,7 +206,7 @@ class Repository extends Capsule
     {
         $pattern = '/<h[1-2]>([^<]*)<\/h[1-2]/i';
 
-        if (preg_match($pattern, $content, $matches)) {
+        if (\preg_match($pattern, $content, $matches)) {
             return $matches[1];
         }
 
@@ -226,16 +217,37 @@ class Repository extends Capsule
     {
         $versions = config('readme.versions.published');
 
-        if (!is_array($versions)) {
+        if (!\is_array($versions)) {
             return [
                 'master' => 'master',
             ];
         }
 
-        $versions = array_combine($versions, $versions);
+        $versions = \array_combine($versions, $versions);
 
-        $versions['master'] = key($versions);
+        $versions['master'] = \key($versions);
 
         return $versions;
+    }
+
+    protected function getContent(string $page, $version = '1.0')
+    {
+        $time = config('readme.cache_time') ?: 20;
+
+        return $this->cache->remember('docs.' . $version . $page, $time, function () use ($version, $page) {
+            $path = resource_path('docs') . '/' . $version . '/' . $page;
+
+            if ($this->files->isDirectory($path)) {
+                $path .= '/' . config('readme.docs.landing');
+            }
+
+            $path .= '.md';
+
+            if ($this->files->exists($path)) {
+                return $this->replaceLinks($this->files->get($path), $version);
+            }
+
+            return null;
+        });
     }
 }
