@@ -46,11 +46,6 @@ class Controller extends BaseController
     {
         $versions = $this->docs->getVersions();
 
-        if (null == $page && $version) {
-            $page    = $version;
-            $version = null;
-        }
-
         $page    = $page ?: config('readme.docs.landing');
         $version = $version ?: config('readme.versions.default', 'master');
 
