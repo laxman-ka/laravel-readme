@@ -17,6 +17,7 @@ use Diviky\Readme\Http\Controllers\Docs\Mark\HeaderProcessor;
 use Diviky\Readme\Http\Controllers\Docs\Mark\MarkExtension;
 use Illuminate\Contracts\Cache\Repository as Cache;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\View;
 use League\CommonMark\CommonMarkConverter;
 use League\CommonMark\Environment;
 use League\CommonMark\Event\DocumentParsedEvent;
@@ -131,7 +132,8 @@ class Repository
      */
     public function replaceLinks(string $content, string $version): ?string
     {
-        $replace = config('readme.variables');
+        $config  = config('readme');
+        $replace = $config['variables'];
         if (!\is_array($replace)) {
             $replace = [];
         }
@@ -139,10 +141,16 @@ class Repository
         $replace['version'] = $version;
         $replace['domain']  = request()->getSchemeAndHttpHost();
 
+        if (isset($config['blade_support']) && true == $config['blade_support']) {
+            $content = $this->blade($content, $replace);
+        }
+
         foreach ($replace as $key => $value) {
-            $content = \str_replace('{{' . $key . '}}', $value, $content);
-            $content = \str_replace('{{ ' . $key . ' }}', $value, $content);
             $content = \str_replace('{' . $key . '}', $value, $content);
+            $content = \str_replace('{{$' . $key . '}}', $value, $content);
+            $content = \str_replace('{{ $' . $key . ' }}', $value, $content);
+            $content = \str_replace('{{ ' . $key . ' }}', $value, $content);
+            $content = \str_replace('{{' . $key . '}}', $value, $content);
         }
 
         return $content;
@@ -249,5 +257,34 @@ class Repository
 
             return null;
         });
+    }
+
+    /**
+     * Render a given blade template with the optionally given data.
+     *
+     * @param mixed $template
+     * @param mixed $data
+     */
+    protected function blade($template, $data = []): string
+    {
+        $filename = \uniqid('blade_');
+
+        $path = storage_path('app/tmp');
+
+        View::addLocation($path);
+
+        $filepath = $path . DIRECTORY_SEPARATOR . "{$filename}.blade.php";
+
+        if (!\file_exists($path)) {
+            \mkdir($path, 0777, true);
+        }
+
+        \file_put_contents($filepath, \trim($template));
+
+        $rendered = (View::make($filename, $data))->render();
+
+        \unlink($filepath);
+
+        return $rendered;
     }
 }

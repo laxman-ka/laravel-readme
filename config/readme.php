@@ -16,6 +16,7 @@ return [
     ],
     'variables'  => [],
     'cache_time' => 10,
+    'blade_support' => true,
     'extensions' => [],
     // markdown configuration
     'markdown'   => [],
