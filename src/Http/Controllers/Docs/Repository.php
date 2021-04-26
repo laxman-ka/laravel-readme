@@ -240,16 +240,19 @@ class Repository
 
     protected function getContent(string $page, $version = '1.0')
     {
-        $time = config('readme.cache_time') ?: 20;
+        $config = config('readme');
+        $time   = $config['cache_time'] ?: 20;
+        $docs   = $config['docs'];
 
-        return $this->cache->remember('docs.' . $version . $page, $time, function () use ($version, $page) {
-            $path = resource_path('docs') . '/' . $version . '/' . $page;
+        return $this->cache->remember('docs.' . $version . $page, $time, function () use ($version, $page, $docs) {
+            $path = $docs['path'] . '/' . $version . '/' . $page;
 
             if ($this->files->isDirectory($path)) {
-                $path .= '/' . config('readme.docs.landing');
+                $path .= '/' . $docs['landing'];
             }
 
             $path .= '.md';
+            $path = \str_replace('//', '/', $path);
 
             if ($this->files->exists($path)) {
                 return $this->replaceLinks($this->files->get($path), $version);

@@ -3,7 +3,7 @@
 return [
     'docs'       => [
         'route'      => '/docs',
-        'path'       => '/resources/docs',
+        'path'       => resource_path('docs'),
         'landing'    => 'index',
         'menu'       => 'documentation',
         'middleware' => ['web'],
@@ -14,10 +14,10 @@ return [
             'v1',
         ],
     ],
-    'variables'  => [],
-    'cache_time' => 10,
+    'variables'     => [],
+    'cache_time'    => 600,
     'blade_support' => true,
-    'extensions' => [],
+    'extensions'    => [],
     // markdown configuration
     'markdown'   => [],
 ];
