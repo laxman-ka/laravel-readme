@@ -56,8 +56,8 @@ class Controller extends BaseController
 
         $sections = [];
         if (isset($content['sections']) && \is_array($content['sections'])) {
-            $sections = $content['sections'];
-            $title    = $sections[0]['t'];
+            $sections = $content['sections'] ?? null;
+            $title    = $sections[0]['t'] ?? null;
             $sections = $this->docs->formatSections($sections);
         }
 
